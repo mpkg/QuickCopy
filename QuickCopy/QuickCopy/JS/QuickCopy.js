@@ -14,7 +14,7 @@ function createCopy(entityName, guid) {
 }
 
 function successRetrieveEntity(entityMetadata) {
-    EntitySchemaName = entityMetadata.SchemaName;
+    EntitySchemaName = entityMetadata.SchemaName;    
     SDK.Metadata.RetrieveAttribute(EntityName, entityMetadata.PrimaryIdAttribute, null, false, successRetrieveAttribute, errorRetrieveAttribute);
 }
 
@@ -23,7 +23,7 @@ function errorRetrieveEntity(error) {
 }
 
 function successRetrieveAttribute(attributemetadata) {
-    PrimaryIdSchemaName = attributemetadata.SchemaName;
+    PrimaryIdSchemaName = attributemetadata.SchemaName;    
     var newRecord = new Object();
     newRecord.new_ParentId = ParentGUID;
     try {

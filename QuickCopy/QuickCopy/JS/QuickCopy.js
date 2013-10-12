@@ -732,7 +732,6 @@ function createRecord(entityObject) {
 function ConfigureAjaxLoading(text) {
     $('body').append('<div id="loadingDiv"></div>');
     $('#loadingDiv').append('<p id="loadingText">' + text + '</p>')
-                    .css('background', 'url(/_imgs/AdvFind/progress.gif) no-repeat center')
                     .css('background-color', '#FFFFFF')
 					.css('height', '60px')
 					.css('width', '300px')

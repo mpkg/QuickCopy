@@ -51,6 +51,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="LicenseManager.cs" />
     <Compile Include="PreCreateClone.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

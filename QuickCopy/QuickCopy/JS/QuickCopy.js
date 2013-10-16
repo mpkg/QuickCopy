@@ -14,7 +14,7 @@ function createCopy(entityName, guid) {
 }
 
 function successRetrieveEntity(entityMetadata) {
-    EntitySchemaName = entityMetadata.SchemaName;    
+    EntitySchemaName = entityMetadata.SchemaName;
     SDK.Metadata.RetrieveAttribute(EntityName, entityMetadata.PrimaryIdAttribute, null, false, successRetrieveAttribute, errorRetrieveAttribute);
 }
 
@@ -23,10 +23,19 @@ function errorRetrieveEntity(error) {
 }
 
 function successRetrieveAttribute(attributemetadata) {
-    PrimaryIdSchemaName = attributemetadata.SchemaName;    
-    var newRecord = new Object();
-    newRecord.new_ParentId = ParentGUID;
     try {
+        PrimaryIdSchemaName = attributemetadata.SchemaName;
+        var newRecord = new Object();
+        newRecord.new_ParentId = ParentGUID;
+        switch (EntityName) {
+            case 'opportunity':
+                newRecord.CustomerId = {
+                    Id: Xrm.Page.getAttribute('customerid').getValue()[0].id,
+                    LogicalName: 'account'
+                };
+                break;
+        }
+
         createRecord(newRecord);
     }
     catch (e) {

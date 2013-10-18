@@ -5,12 +5,15 @@ var ParentGUID, CopyGUID;
 var PrimaryIdSchemaName;
 
 function createCopy(entityName, guid) {
-    debugger
-    EntityName = entityName;
-    ParentGUID = guid;
-    ConfigureAjaxLoading('Creating a copy...Please wait!');
-    $('#loadingDiv').show();
-    SDK.Metadata.RetrieveEntity(SDK.Metadata.EntityFilters.Entity, entityName, null, false, successRetrieveEntity, errorRetrieveEntity);
+    try {
+        EntityName = entityName;
+        ParentGUID = guid;
+        ConfigureAjaxLoading('Creating a copy...Please wait!');
+        $('#loadingDiv').show();
+        SDK.Metadata.RetrieveEntity(SDK.Metadata.EntityFilters.Entity, entityName, null, false, successRetrieveEntity, errorRetrieveEntity);
+    } catch (e) {
+        $('#loadingDiv').hide();
+    }
 }
 
 function successRetrieveEntity(entityMetadata) {
@@ -29,10 +32,39 @@ function successRetrieveAttribute(attributemetadata) {
         newRecord.new_ParentId = ParentGUID;
         switch (EntityName) {
             case 'opportunity':
+                var opportunity = retrieveAttributeValue("CustomerId", "OpportunitySet", ParentGUID);
                 newRecord.CustomerId = {
-                    Id: Xrm.Page.getAttribute('customerid').getValue()[0].id,
+                    Id: opportunity.CustomerId.Id,
                     LogicalName: 'account'
                 };
+                break;
+            case 'product':
+                var product = retrieveAttributeValue("ProductNumber,DefaultUoMScheduleId,DefaultUoMId", "ProductSet", ParentGUID);
+                newRecord.ProductNumber = '[Copy]' + product.ProductNumber;
+                newRecord.DefaultUoMScheduleId = {
+                    Id: product.DefaultUoMScheduleId.Id,
+                    LogicalName: 'uomschedule'
+                };
+                newRecord.DefaultUoMId = {
+                    Id: product.DefaultUoMId.Id,
+                    LogicalName: 'uom'
+                };
+                break;
+            case 'goal':
+                var goal = retrieveAttributeValue("MetricId,IsFiscalPeriodGoal,FiscalYear,FiscalPeriod", "GoalSet", ParentGUID);
+                newRecord.MetricId = {
+                    Id: goal.MetricId.Id,
+                    LogicalName: 'metric'
+                };
+                if (goal.IsFiscalPeriodGoal) {
+                    newRecord.FiscalPeriod = { Value: goal.FiscalPeriod.Value };
+                    newRecord.FiscalYear = { Value: goal.FiscalYear.Value };
+                }
+
+                break;
+            case 'incident':
+                var incident = retrieveAttributeValue("CustomerId", "IncidentSet", ParentGUID);
+                newRecord.CustomerId = incident.CustomerId
                 break;
         }
 
@@ -79,6 +111,30 @@ function createRecord(entityObject) {
             }
         }
     });
+}
+
+function retrieveAttributeValue(select, odataSetName, id) {
+    var odataUri = ODATA_URL + "/" + odataSetName + "(guid'" + id + "')?";
+    odataUri += "$select=" + select;
+    var returnObject;
+    $.ajax({
+        async: false,
+        type: "GET",
+        contentType: "application/json; charset=utf-8",
+        datatype: "json",
+        url: odataUri,
+        beforeSend: function (XMLHttpRequest) {
+            //Specifying this header ensures that the results will be returned as JSON.
+            XMLHttpRequest.setRequestHeader("Accept", "application/json");
+        },
+        success: function (data, textStatus, XmlHttpRequest) {
+            returnObject = data.d;
+        },
+        error: function (XmlHttpRequest, textStatus, errorThrown) {
+            alert('OData Retrieve Failed: ' + odataUri);
+        }
+    });
+    return returnObject;
 }
 
 {
@@ -744,6 +800,7 @@ function ConfigureAjaxLoading(text) {
                     .css('background-color', '#FFFFFF')
 					.css('height', '60px')
 					.css('width', '300px')
+                    .css('border', '1px solid black')
 					.center()
 					.hide();   // hide it initially
 

@@ -15,6 +15,7 @@ namespace Unizap.Addon.QuickCopy
         private Entity parentEntity = null;
         private Guid parentId;
         private string primaryNameAttribute, primaryIdAttribute;
+        private string[] excludeFieldNames;
 
         public void Execute(IServiceProvider serviceProvider)
         {
@@ -38,9 +39,22 @@ namespace Unizap.Addon.QuickCopy
                             parentEntity = service.Retrieve(context.PrimaryEntityName, parentId, new ColumnSet(true));
 
                             //set primary attributes
-                            FetchPrimaryNameAttribute();
+                            SetPrimaryNameAttribute();
 
-                            #region remove primary key fields
+                            SetExcludeFieldNames(context.PrimaryEntityName);
+
+                            #region remove fields
+
+                            if (excludeFieldNames != null)
+                            {
+                                foreach (string field in excludeFieldNames)
+                                {
+                                    if (parentEntity.Attributes.Contains(field.Trim().ToLower()))
+                                    {
+                                        parentEntity.Attributes.Remove(field);
+                                    }
+                                }
+                            }
 
                             if (parentEntity.Attributes.Contains("new_parentid"))
                                 parentEntity.Attributes.Remove("new_parentid");
@@ -75,22 +89,28 @@ namespace Unizap.Addon.QuickCopy
                             if (parentEntity.Attributes.Contains("invoicestatecode"))
                                 parentEntity.Attributes.Remove("invoicestatecode");
 
-                            if (parentEntity.Attributes.Contains("statuscode"))
-                                parentEntity.Attributes.Remove("statuscode");
-
-                            if (parentEntity.Attributes.Contains("invoicestatecode"))
-                                parentEntity.Attributes.Remove("invoicestatecode");
-
                             if (parentEntity.Attributes.Contains("quotestatecode"))
                                 parentEntity.Attributes.Remove("quotestatecode");
 
                             if (parentEntity.Attributes.Contains("salesorderstatecode"))
                                 parentEntity.Attributes.Remove("salesorderstatecode");
 
+                            if (parentEntity.Attributes.Contains("productnumber"))
+                                parentEntity.Attributes.Remove("productnumber");
+
                             if (parentEntity.Attributes.Contains("quotenumber"))
                                 parentEntity.Attributes.Remove("quotenumber");
 
-                            #endregion remove primary key fields
+                            if (parentEntity.Attributes.Contains("ordernumber"))
+                                parentEntity.Attributes.Remove("ordernumber");
+
+                            if (parentEntity.Attributes.Contains("invoicenumber"))
+                                parentEntity.Attributes.Remove("invoicenumber");
+
+                            if (parentEntity.Attributes.Contains("ticketnumber"))
+                                parentEntity.Attributes.Remove("ticketnumber");
+
+                            #endregion remove fields
 
                             foreach (var attribute in parentEntity.Attributes)
                             {
@@ -108,7 +128,7 @@ namespace Unizap.Addon.QuickCopy
             }
         }
 
-        private void FetchPrimaryNameAttribute()
+        private void SetPrimaryNameAttribute()
         {
             RetrieveEntityRequest req = new RetrieveEntityRequest();
             RetrieveEntityResponse res = new RetrieveEntityResponse();
@@ -122,6 +142,23 @@ namespace Unizap.Addon.QuickCopy
             EntityMetadata entityMetaData = res.EntityMetadata;
             primaryIdAttribute = entityMetaData.PrimaryIdAttribute;
             primaryNameAttribute = entityMetaData.PrimaryNameAttribute;
+        }
+
+        private void SetExcludeFieldNames(string entityName)
+        {
+            QueryExpression query = new QueryExpression();
+            query.EntityName = "unizap_quickcopyexcludefieldsconfig";
+            query.ColumnSet = new ColumnSet() { AllColumns = true };
+            query.Criteria = new FilterExpression();
+            query.Criteria.AddCondition("unizap_entityname", ConditionOperator.Equal, entityName);
+
+            EntityCollection records = service.RetrieveMultiple(query);
+
+            //Iterate across results and output fullname
+            foreach (Entity excludeFieldsConfig in records.Entities)
+            {
+                excludeFieldNames = excludeFieldsConfig.GetAttributeValue<string>("unizap_excludefieldslist").Split(',');
+            }
         }
     }
 }

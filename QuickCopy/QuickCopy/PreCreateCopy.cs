@@ -6,7 +6,7 @@ using Microsoft.Xrm.Sdk.Query;
 
 namespace Unizap.Addon.QuickCopy
 {
-    public class PreCreateClone : IPlugin
+    public class PreCreateCopy : IPlugin
     {
         private IOrganizationService service = null;
         private IPluginExecutionContext context = null;
@@ -27,9 +27,9 @@ namespace Unizap.Addon.QuickCopy
             if (context.InputParameters.Contains("Target") && context.InputParameters["Target"] is Entity)
             {
                 targetEntity = context.InputParameters["Target"] as Entity;
-                if (targetEntity.Contains("new_parentid"))
+                if (targetEntity.Contains("new_quickcopyparentid"))
                 {
-                    if (Guid.TryParse((string)targetEntity["new_parentid"], out parentId))
+                    if (Guid.TryParse((string)targetEntity["new_quickcopyparentid"], out parentId))
                     {
                         LicenseManager lic = new LicenseManager(ref service, ref context);
                         int result = lic.ValidateLicense("unizap_/QuickCopy/QuickCopy_License.xml", "QuickCopy");
@@ -56,8 +56,8 @@ namespace Unizap.Addon.QuickCopy
                                 }
                             }
 
-                            if (parentEntity.Attributes.Contains("new_parentid"))
-                                parentEntity.Attributes.Remove("new_parentid");
+                            if (parentEntity.Attributes.Contains("new_quickcopyparentid"))
+                                parentEntity.Attributes.Remove("new_quickcopyparentid");
 
                             if (parentEntity.Attributes.Contains("ownerid"))
                                 parentEntity.Attributes.Remove("ownerid");

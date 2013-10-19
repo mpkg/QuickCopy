@@ -29,7 +29,7 @@ function successRetrieveAttribute(attributemetadata) {
     try {
         PrimaryIdSchemaName = attributemetadata.SchemaName;
         var newRecord = new Object();
-        newRecord.new_ParentId = ParentGUID;
+        newRecord.new_QuickCopyParentId = ParentGUID;
         switch (EntityName) {
             case 'opportunity':
                 var opportunity = retrieveAttributeValue("CustomerId", "OpportunitySet", ParentGUID);

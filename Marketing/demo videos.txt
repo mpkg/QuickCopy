@@ -1,4 +1,0 @@
-1. Import solution
-2. Demo - Copy Opportunity
-3. Demo - Copy Account with exclude fields
-4. Demo - Copy Quote with related products

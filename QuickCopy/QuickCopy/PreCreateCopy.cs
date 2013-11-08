@@ -77,6 +77,9 @@ namespace Unizap.Addon.QuickCopy
                             if (parentEntity.Attributes.Contains("owningbusinessunit"))
                                 parentEntity.Attributes.Remove("owningbusinessunit");
 
+                            if (parentEntity.Attributes.Contains("organizationid"))
+                                parentEntity.Attributes.Remove("organizationid");
+
                             if (parentEntity.Attributes.Contains("statuscode"))
                                 parentEntity.Attributes.Remove("statuscode");
 

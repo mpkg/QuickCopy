@@ -26,6 +26,12 @@ function errorRetrieveEntity(error) {
 }
 
 function successRetrieveAttribute(attributemetadata) {
+<<<<<<< HEAD
+=======
+    PrimaryIdSchemaName = attributemetadata.SchemaName;
+    var newRecord = new Object();
+    newRecord.new_ParentId = ParentGUID;
+>>>>>>> parent of d295378... 11/10
     try {
         PrimaryIdSchemaName = attributemetadata.SchemaName;
         var newRecord = new Object();

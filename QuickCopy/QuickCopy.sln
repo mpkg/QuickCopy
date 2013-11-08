@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Unizap.Addon.QuickCopy", "QuickCopy\Unizap.Addon.QuickCopy.csproj", "{4C4559EC-1D4B-409D-B750-2C9FC98A47E0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuickCopy", "QuickCopy\QuickCopy.csproj", "{4C4559EC-1D4B-409D-B750-2C9FC98A47E0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
